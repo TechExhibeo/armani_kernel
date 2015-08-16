@@ -42,7 +42,7 @@ static struct thermal_info {
 
 enum thermal_freqs {
 	FREQ_VERY_HOT		= 787200,
-	FREQ_HOT		= 998400,
+	FREQ_HOT		= 1094400,
 	FREQ_WARM		= 1305600,
 };
 
@@ -78,7 +78,7 @@ static struct notifier_block msm_thermal_cpufreq_notifier = {
 	.notifier_call = msm_thermal_cpufreq_callback,
 };
 
-static void limit_cpu_freqs(uint32_t max_freq)
+static void __ref limit_cpu_freqs(uint32_t max_freq)
 {
 	unsigned int cpu;
 
@@ -127,8 +127,7 @@ static void check_temp(struct work_struct *work)
 	else if (temp > temp_threshold)
 		freq = FREQ_WARM;
 
-	if (freq)
-	{
+	if (freq) {
 		limit_cpu_freqs(freq);
 
 		if (!info.throttling)
@@ -136,7 +135,7 @@ static void check_temp(struct work_struct *work)
 	}
 
 reschedule:
-	schedule_delayed_work_on(0, &check_temp_work, msecs_to_jiffies(250));
+	schedule_delayed_work_on(0, &check_temp_work, msecs_to_jiffies(300));
 }
 
 static int __devinit msm_thermal_dev_probe(struct platform_device *pdev)

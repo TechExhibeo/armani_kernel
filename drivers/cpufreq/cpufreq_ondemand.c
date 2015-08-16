@@ -465,6 +465,9 @@ static ssize_t store_io_is_busy(struct kobject *a, struct attribute *b,
 	unsigned int input;
 	int ret;
 
+	if (sysfs_streq(current->comm, "mpdecision"))
+		return -EINVAL;
+
 	ret = sscanf(buf, "%u", &input);
 	if (ret != 1)
 		return -EINVAL;
@@ -1015,7 +1018,6 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 
 		if (policy->cur == policy->max)
 			return;
-		freq_target = dbs_freq_increase(policy, this_dbs_info);
 
 		if (freq_target > policy->max)
 			freq_target = policy->max;
